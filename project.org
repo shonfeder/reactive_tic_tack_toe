@@ -1,0 +1,32 @@
+* Notes
+* Tasks
+* Tutorial
+** Install
+** Initialize project
+
+   Create a basic project:
+
+   #+BEGIN_SRC sh
+   $ eliom-distillery -name reactive_tic_tack_toe -template basic.ppx
+   #+END_SRC
+
+*** What the basic project template includes
+
+    ~cd~ into the directory and see what the template has set up for us:
+
+    #+BEGIN_SRC sh
+    $ cd reactive_tic_tack_toe
+    $ ls
+    Makefile                      README                        reactive_tic_tack_toe.eliom
+    Makefile.options              reactive_tic_tack_toe.conf.in static
+    #+END_SRC
+
+    You should read the ~README~ for a helpful description of these files. But,
+    here's a brief account of the essentials:
+
+    - ~reactive_tic_tack_toe.eliom~ :: The code defining our site goes here.
+    - ~static~ :: Static resources will go here, such as images and CSS files.
+    - ~Makefile.options~ :: Configuration of the project goes here. We'll get to
+         this later.
+
+*** Building the project and running the test server
