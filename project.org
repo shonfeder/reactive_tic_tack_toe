@@ -1,8 +1,8 @@
 * Notes
 * Tasks
 * Tutorial
-** Install
-** Initialize project
+** Installing OCaml and dependencies
+** Initializing the project
 
    Create a basic project:
 
@@ -45,7 +45,21 @@
     This is the basic cycle for running functional tests as the project
     develops:
 
-    1. Make changes.
-    2. Build the project and run the server with ~make test.byte~.
-    3. Check out the site by visiting http://localhost:8080/.
-    4. Quit the server with =Control+C= and go back to (1).
+**** Basic work flow
+
+     1. Make changes.
+     2. Build the project and run the server with ~make test.byte~.
+     3. Check out the site by visiting http://localhost:8080/.
+     4. Quit the server with =Control+C= and go back to (1).
+
+*** The automatically generated files
+
+    After the project builds, a number of files will be automatically generated.
+    You don't need to worry about any of these, but a brief description of them
+    will help demystify.
+
+    - ~_client~, ~_server~ :: The compiled ocaml files for the client and
+         server, respectively.
+    - ~_deps~ :: Dependency information for the complied files.
+    - ~local~ :: Files and logs used by the server.
+
