@@ -30,3 +30,22 @@
          this later.
 
 *** Building the project and running the test server
+
+    To build the project and run the server, just execute
+
+    #+BEGIN_SRC sh
+    $ make test.byte
+    #+END_SRC
+
+    When you point your browser to http://localhost:8080/, you should see the default
+    page.
+
+    You can quite sever by pressing =Control+c= in the terminal.
+
+    This is the basic cycle for running functional tests as the project
+    develops:
+
+    1. Make changes.
+    2. Build the project and run the server with ~make test.byte~.
+    3. Check out the site by visiting http://localhost:8080/.
+    4. Quit the server with =Control+C= and go back to (1).
