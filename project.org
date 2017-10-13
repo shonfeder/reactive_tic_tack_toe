@@ -63,3 +63,34 @@
     - ~_deps~ :: Dependency information for the complied files.
     - ~local~ :: Files and logs used by the server.
 
+*** Getting Tuareg and Merlin working correctly
+
+    Tooling-wise, the OCaml ecosystem is currently in an awkward state. The
+    tooling available is relatively powerful, feature rich, compact, and
+    coherent, but the setup can be finicky and requires a lot of manual
+    maintenance. These are some tips for coaxing the tooling to behave well on
+    Eliom projects.
+
+    Assuming you are using ~eliom-distillery~ to get started with a template,
+    you'll need to add the following to your ~.merlin~ file to get all the merlin
+    goodness:
+
+    #+BEGIN_SRC merlin
+    PKG eliom
+    PKG eliom.client
+    PKG eliom.ppx
+
+    PKG ocsigenserver
+    PKG ocsigen-toolkit
+
+    PKG ppx_deriving
+    PKG eliom.ppx.server
+    PKG eliom.ppx.client
+
+    S _client
+    S _server
+
+    B _client
+    B _server
+    #+END_SRC
+
