@@ -26,9 +26,9 @@
    You should read the SRC_OCAML{README} for a helpful description of these files. But,
    here's a brief account of the essentials:
 
-   - src_ocaml{rttt.eliom} :: The code defining our site goes here.
-   - src_ocaml{static} :: Static resources will go here, such as images and CSS files.
-   - src_ocaml{Makefile.options} :: Configuration of the project goes here. We'll get to
+   - =rttt.eliom= :: The code defining our site goes here.
+   - =static= :: Static resources will go here, such as images and CSS files.
+   - =Makefile.options= :: Configuration of the project goes here. We'll get to
         this later.
 
 ** Building the project and running the test server
