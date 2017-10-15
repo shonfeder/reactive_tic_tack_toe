@@ -4,10 +4,10 @@
     open Html.D
 ]
 
-module Reactive_tic_tack_toe_app =
+module Rttt_app =
   Eliom_registration.App (
     struct
-      let application_name = "reactive_tic_tack_toe"
+      let application_name = "rttt"
       let global_data_path = None
     end)
 
@@ -18,13 +18,13 @@ let main_service =
     ()
 
 let () =
-  Reactive_tic_tack_toe_app.register
+  Rttt_app.register
     ~service:main_service
     (fun () () ->
       Lwt.return
         (Eliom_tools.F.html
-           ~title:"reactive_tic_tack_toe"
-           ~css:[["css";"reactive_tic_tack_toe.css"]]
+           ~title:"rttt"
+           ~css:[["css";"rttt.css"]]
            Html.F.(body [
              h1 [pcdata "Welcome from Eliom's distillery!"];
            ])))

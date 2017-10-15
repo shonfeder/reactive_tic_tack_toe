@@ -1,9 +1,9 @@
 
 #----------------------------------------------------------------------
-#           SETTINGS FOR THE ELIOM PROJECT reactive_tic_tack_toe
+#           SETTINGS FOR THE ELIOM PROJECT rttt
 #----------------------------------------------------------------------
 
-PROJECT_NAME := reactive_tic_tack_toe
+PROJECT_NAME := rttt
 
 # Source files for the server
 SERVER_FILES := $(wildcard *.eliomi *.eliom)
