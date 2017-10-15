@@ -1,4 +1,6 @@
-#+TITLE: Creating a Reactive Client-Server App in OCaml with Eliom
+#+TITLE: Reactive Client-Server Apps in OCaml with Eliom
+#+PROPERTY: header-args :exports code
+#+SETUPFILE: ~/Programming/org/org-html-themes/setup/theme-readtheorg.setup
 
 * Introduction
 * Installing OCaml and dependencies
