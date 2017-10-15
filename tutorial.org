@@ -308,13 +308,13 @@
          worry about. It is indicative of unfortunate failure to elegantly
          abstract the complexity of the underlying Eliom mechanisms, but
          generally it is only an eyesore, and needn't be fathomed.
-    - ~\'get~ and ~\`post~ :: are type variables which will be instantiated
+    - ~'get~ and ~'post~ :: are type variables which will be instantiated
          with the type of the GET and POST parameters the service is able to
          handle.
     - ~('get -> 'post -> page Lwt.t)~ :: is the function that handles requests
          to the address served by our service.
     - ~page Lwt.t~ :: [[https://ocsigen.org/lwt/3.1.0/manual/manual][Lwt]] is an OCaml concurrency library. ~'a Lwt.t~ is a
-         promise that will return something of type ~\'a~ when the computation
+         promise that will return something of type ~'a~ when the computation
          is done. In this case, the handler returns a promise to return a
          ~page~, which will be some kind of generated HTML.
 
