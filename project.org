@@ -51,7 +51,6 @@
      2. Build the project and run the server with ~make test.byte~.
      3. Check out the site by visiting http://localhost:8080/.
      4. Quit the server with =Control+C= and go back to (1).
-
 *** The automatically generated files
 
     After the project builds, a number of files will be automatically generated.
@@ -62,7 +61,7 @@
          server, respectively.
     - ~_deps~ :: Dependency information for the complied files.
     - ~local~ :: Files and logs used by the server.
-
+         
 *** Getting Tuareg and Merlin working correctly
 
     Tooling-wise, the OCaml ecosystem is currently in an awkward state. The
@@ -94,3 +93,103 @@
     B _server
     #+END_SRC
 
+*** Anatomy of the generated eliom file
+
+    An ~.eliom~ file is just a normal OCaml file, but the Eliom compiler knows
+    to include these in the project build without having to explicitly declare
+    the file in the list of dependencies in the ~Makefile.options~. Take a look
+    at the default contents of ~rttt.eliom~.
+
+    #+BEGIN_SRC ocaml
+    [%%shared
+        open Eliom_lib
+        open Eliom_content
+        open Html.D
+    ]
+
+    module Rttt_app =
+      Eliom_registration.App (
+        struct
+          let application_name = "rttt"
+          let global_data_path = None
+        end)
+
+    let main_service =
+      Eliom_service.create
+        ~path:(Eliom_service.Path [])
+        ~meth:(Eliom_service.Get Eliom_parameter.unit)
+        ()
+
+    let () =
+      Rttt_app.register
+        ~service:main_service
+        (fun () () ->
+          Lwt.return
+            (Eliom_tools.F.html
+               ~title:"rttt"
+               ~css:[["css";"rttt.css"]]
+               Html.F.(body [
+                 h1 [pcdata "Welcome from Eliom's distillery!"];
+               ])))
+    #+END_SRC
+
+    Before we begin building out our project on top of this scaffold, let's
+    survey the current contents to illuminate the basic elements of an Eliom
+    project. We proceed with an explanation of each of the four code blocks
+    above. They correspond to
+
+    1. Module imports
+    2. Specification of the client-server application
+    3. Creation of a service to serve the app from the root URL
+    4. Registering the app to be served with generated HTML at that service
+
+**** 1. Module Imports
+
+     #+BEGIN_SRC ocaml
+     [%%shared
+          open Eliom_lib
+          open Eliom_content
+          open Html.D
+     ]
+     #+END_SRC
+
+**** 2. Specification of the App
+
+     #+BEGIN_SRC ocaml
+     module Rttt_app =
+       Eliom_registration.App (
+         struct
+           let application_name = "rttt"
+           let global_data_path = None
+         end)
+     #+END_SRC
+
+**** 3. Creating the root service
+
+     #+BEGIN_SRC ocaml
+     let main_service =
+       Eliom_service.create
+       ~path:(Eliom_service.Path [])
+       ~meth:(Eliom_service.Get Eliom_parameter.unit)
+       ()
+    #+END_SRC
+
+**** 4. Registering the service
+
+     #+BEGIN_SRC ocaml
+     let () =
+       Rttt_app.register
+         ~service:main_service
+         (fun () () ->
+           Lwt.return
+             (Eliom_tools.F.html
+                ~title:"rttt"
+                ~css:[["css";"rttt.css"]]
+                Html.F.(body [
+                  h1 [pcdata "Welcome from Eliom's distillery!"];
+                ])))
+     #+END_SRC
+
+** Creating Services
+
+   The basic structure of Eliom sites is based around services.
