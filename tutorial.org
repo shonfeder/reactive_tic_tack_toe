@@ -455,3 +455,58 @@ let () =
     ~service:Service.main
     Handler.main
    #+END_SRC
+* Servicing GET requests: Creating a game room
+
+  We want this app to support multiple ongoing games. Each game will be
+  identified with an integer. GET requests to =/games= will supply the integer
+  to the =id= parameter, and this will retrieve the matching game, if it exists,
+  or fall back to the /game room/. The /game room/ will be a list of ongoing
+  games, served at the url =/games= when no parameters are supplied.
+
+** A game page is a service answering simple GET requests
+
+   Let's start by creating and registering a service to serve the GET requests and
+   a handler to respond to incoming queries. We will add the following:
+
+   - a ~game~ service to the src_ocaml{Service} module ::
+   #+BEGIN_SRC ocaml
+   let game =
+     create
+       ~path:(Path ["game"])
+       ~meth:(Get (Param.int "id"))
+       ()
+   #+END_SRC
+
+   This creates a service for the url =/games= which responds get params ~id=n~,
+   where n is some integer. An example of a GET request that would land on this
+   service is =/games?id=3=.
+
+   - a ~game~ handler to the src_ocaml{Handler} module ::
+   #+BEGIN_SRC ocaml
+   let game id _post =
+     let game_number = Printf.sprintf "Game #%i" id in
+     let body = let open Html.F in
+       body [h1 [pcdata game_number]]
+     in
+     Lwt.return @@ basic_page
+       ~title:("Reactive Tic-Tac-Toe " ^ game_number)
+       body
+   #+END_SRC
+
+   This time, we are actually receiving an informative GET parameter, into the
+   src_ocaml{id} variable. This parameter, which we know will be an integer from
+   the specification of the game service, is used to construct a string
+   indicating the game number.
+
+   - a call to register the handler service with our app ::
+   This is virtually identical to the registration of =main=
+   #+BEGIN_SRC ocaml
+   let () =
+     Rttt.App.register
+       ~service:Service.game
+       Handler.game
+   #+END_SRC
+
+   If you build the project and point your browser to
+   [[http://localhost:8080/games?id=3923]], you should be greeted with the
+   heading "Game #3923".

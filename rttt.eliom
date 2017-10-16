@@ -22,7 +22,12 @@ module Service = struct
       ~meth:(Get Param.unit)
       ()
 
-  let game_room =
+  let game =
+    create
+      ~path:(Path ["game"])
+      ~meth:(Get (Param.int "id"))
+      ()
+
     create
       ~path:(Path ["games"; ""])
       ~meth:(Get Param.int)
@@ -30,25 +35,24 @@ module Service = struct
 end
 
 module Handler = struct
-  let page = Eliom_tools.F.html
+  let basic_page = Eliom_tools.F.html ~css:[["css";"rttt.css"]]
 
   let main _get _post =
     let body = let open Html.F in
       body [h1 [pcdata "Reactive Tic-Tac-Toe"]]
     in
-    Lwt.return @@ page
+    Lwt.return @@ basic_page
       ~title:"rttt"
-      ~css:[["css";"rttt.css"]]
       body
 
-  let game_room game_id _post =
+  let game id _post =
+    let game_number = Printf.sprintf "Game #%i" id in
     let body = let open Html.F in
-      let heading = Printf.sprintf "Game #%i" game_id in
-      body [h1 [pcdata "Game "]]
+      body [h1 [pcdata game_number]]
     in
-    Lwt.return @@ page
-      ~title:"rttt"
-      ~css:[["css";"rttt.css"]]
+    Lwt.return @@ basic_page
+      ~title:("Reactive Tic-Tac-Toe " ^ game_number)
+      body
       body
 end
 
