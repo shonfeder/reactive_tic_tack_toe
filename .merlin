@@ -2,6 +2,8 @@ PKG eliom
 PKG eliom.client
 PKG eliom.ppx
 
+PKG react
+
 PKG ocsigenserver
 PKG ocsigen-toolkit
 

@@ -1,7 +1,7 @@
 [%%shared
-    open Eliom_lib
-    open Eliom_content
-    open Html.D
+  open Eliom_lib
+  open Eliom_content
+  open Html.D
 ]
 
 module Rttt = struct
@@ -28,9 +28,10 @@ module Service = struct
       ~meth:(Get (Param.int "id"))
       ()
 
+  let games =
     create
       ~path:(Path ["games"; ""])
-      ~meth:(Get Param.int)
+      ~meth:(Get Param.unit)
       ()
 end
 
@@ -65,3 +66,8 @@ let () =
   Rttt.App.register
     ~service:Service.game
     Handler.game
+
+let () =
+  Rttt.App.register
+    ~service:Service.games
+    Handler.games
