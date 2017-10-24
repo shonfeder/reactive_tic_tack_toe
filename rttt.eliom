@@ -4,6 +4,20 @@
   open Html.D
 ]
 
+module State = struct
+  let games = ref []
+  let game_id = ref 0
+  let new_game () =
+    game_id := !game_id + 1;
+    games   := game_id :: !games;
+    !game_id
+
+  let lookup_game id =
+    if List.mem (ref id) (!games)
+    then Some id
+    else None
+end
+
 module Rttt = struct
   module Info = struct
     let application_name = "rttt"
