@@ -51,14 +51,18 @@ module Service = struct
 
 end
 
+[%%shared
 module Game = struct
 
   type coord = int * int
+  [@@deriving json]
 
   module Piece = struct
+
     type t =
       | X
       | O
+    [@@deriving json]
 
     let switch
       : t -> t = function
@@ -76,6 +80,7 @@ module Game = struct
 
   module Square = struct
     type t = Piece.t option
+    [@@deriving json]
 
     let empty : t = None
 
@@ -93,8 +98,11 @@ module Game = struct
   module Board = struct
 
     type row = Square.t list
+    [@@deriving json]
     type t   = Square.t list list
+    [@@deriving json]
     type three_in_a_row = Piece.t * coord list
+    [@@deriving json]
 
     exception Board
 
@@ -178,21 +186,11 @@ module Game = struct
       | Move    of Piece.t
       | Victory of Board.three_in_a_row
       | Draw
+    [@@deriving json]
 
     type t = { status : status
              ; board  : Board.t }
-
-    (* let next_status *)
-    (*   : Piece.t -> Board.t -> t *)
-    (*   = fun pc board -> *)
-    (*     let status = *)
-    (*       if Board.has_free_space board *)
-    (*       then Draw *)
-    (*       else match Board.three_in_a_row board with *)
-    (*         | None     -> Move (Piece.switch pc) *)
-    (*         | Some row -> Victory row *)
-    (*     in *)
-    (*     {status; board} *)
+    [@@deriving json]
 
     let next
       : t -> t = function
@@ -213,6 +211,7 @@ module Game = struct
   end
 
   type t = Turn.t list
+  [@@deriving json]
 
   let move
     : t -> Piece.t -> coord -> (t, t) result
@@ -229,8 +228,8 @@ module Game = struct
       match game with
       | []        -> Ok [Turn.first]
       | turn :: _ -> make_move turn
-
 end
+]
 
 [%%client
 open Eliom_content.Html
@@ -263,6 +262,7 @@ let make_client_nodes () =
   [ D.p [R.pcdata value_signal]
   ; D.p ~a:color [R.pcdata value_signal]
   ; R.node content_signal ]
+
 ]
 
 let make_input () =
