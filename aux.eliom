@@ -1,3 +1,5 @@
+[%%shared.start]
+
 let (%) f g = fun x -> f (g x)
 let id x = x
 let rec range : int -> int -> int list
