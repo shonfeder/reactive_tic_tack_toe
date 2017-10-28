@@ -510,3 +510,25 @@ let () =
    If you build the project and point your browser to
    [[http://localhost:8080/games?id=3923]], you should be greeted with the
    heading "Game #3923".
+* Defining the game of hang man
+** Adding package dependencies
+
+   Add ~containers~ and ~ppx_deriving.show~ to the list of required packages:
+
+   #+BEGIN_SRC makefile
+   # OCamlfind packages for the server
+   SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx containers ppx_deriving.show
+   # OCamlfind packages for the client
+   CLIENT_PACKAGES := lwt.ppx js_of_ocaml.ppx js_of_ocaml.deriving.ppx containers ppx_deriving.show
+   #+END_SRC
+* Adding reactivity
+** Adding package dependencies
+
+   Add ~react~ to the list of required packages:
+
+   #+BEGIN_SRC makefile
+   # OCamlfind packages for the server
+   SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx react
+   # OCamlfind packages for the client
+   CLIENT_PACKAGES := lwt.ppx js_of_ocaml.ppx js_of_ocaml.deriving.ppx react
+   #+END_SRC

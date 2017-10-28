@@ -54,31 +54,73 @@ end
 [%%shared
 module Game = struct
 
-  type t = { guesses   : int
-           ; word      : string
-           ; correct   : char option array
-           ; incorrect : char list}
+  module Letter = struct
+    type t =
+      | Revealed of char
+      | Hidden   of char
+    [@@deriving show]
+
+    let hidden
+      : char -> t
+      = fun char -> Hidden char
+
+    let reveal
+      : t -> t = function
+      | Hidden c -> Revealed c
+      | revealed -> revealed
+
+    let to_char
+      : t -> char = function
+      | Revealed c -> c
+      | Hidden c   -> c
+
+    let is_char
+      : char -> t -> bool
+      = fun c l -> to_char l = c
+  end
+
+  module Word = struct
+    type t = Letter.t list
+    [@@deriving show]
+
+    let of_string
+      : string -> t
+      = fun str -> str |> CCString.to_list |> CCList.map Letter.hidden
+
+    let reveal
+      : char -> t -> t
+      = fun c word ->
+        let reveal_match l =
+          if Letter.is_char c l then Letter.reveal l else l
+        in List.map reveal_match word
+
+  end
+
+  type t =
+    { guesses   : int
+    ; word      : Word.t
+    ; incorrect : char list }
   [@@deriving show]
 
   let max_guesses = 6
 
   let start
     : string -> t
-    = fun word ->
-      let correct =
-        let len = String.length word in
-        Array.make len None
-      in
-      { guesses = 0
-      ; word
-      ; correct
-      ; incorrect = []}
+    = fun str ->
+      { guesses   = 0
+      ; word      = Word.of_string str
+      ; incorrect = [] }
 
-  (* let guess *)
-  (*   : t -> char -> t *)
-  (*   = fun game char -> *)
-  (*     if List.mem char game.turn *)
-  (*     then  *)
+  let guess
+    : t -> char -> t
+    = fun ({guesses; word; incorrect} as game) guess ->
+      let guesses, word, incorrect =
+        if CCList.exists (Letter.is_char guess) game.word
+        then guesses, (Word.reveal guess game.word), incorrect
+        else (guesses + 1), game.word, (guess :: incorrect)
+      in
+      {guesses; word; incorrect}
+
 end
 
 ]
