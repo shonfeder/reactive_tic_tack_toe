@@ -14,7 +14,7 @@
 
 ** What's included in the basic project template
 
-   src_ocaml{cd} into the directory and see what the template has set up for us:
+   =cd= into the directory and see what the template has set up for us:
 
    #+BEGIN_SRC sh
    $ cd rtt
@@ -23,7 +23,7 @@
    Makefile.options              rttt.conf.in                  static
    #+END_SRC
 
-   You should read the SRC_OCAML{README} for a helpful description of these files. But,
+   You should read the =README= for a helpful description of these files. But,
    here's a brief account of the essentials:
 
    - =rttt.eliom= :: The code defining our site goes here.
@@ -50,7 +50,7 @@
 *** Basic work flow
 
     1. Make changes.
-    2. Build the project and run the server with src_ocaml{make test.byte}.
+    2. Build the project and run the server with =make test.byte=.
     3. Check out the site by visiting [[http://localhost:8080/]].
     4. Quit the server with =Control+C= and go back to (1).
 
@@ -60,10 +60,10 @@
    You don't need to worry about any of these, but a brief description of them
    will help demystify.
 
-   - src_ocaml{_client}, src_ocaml{_server} :: The compiled ocaml files for the client and
+   - =_client=, =_server= :: The compiled ocaml files for the client and
         server, respectively.
-   - src_ocaml{_deps} :: Dependency information for the complied files.
-   - src_ocaml{local} :: Files and logs used by the server.
+   - =_deps= :: Dependency information for the complied files.
+   - =local= :: Files and logs used by the server.
 
 ** Getting Tuareg and Merlin working correctly
 
@@ -246,7 +246,7 @@
    src_ocaml{Eliom_service}.
 
    In this case, we create a service to provide entry into the root of our
-   site and responding to SRC_OCAML{GET} requests carrying no data.
+   site and responding to =GET= requests carrying no data.
 
    #+BEGIN_NOTE
    The src_ocaml{Eliom_service.crate} function always takes a unit value as it's
@@ -374,7 +374,7 @@
     modules to generate type-safe, statically verified HTML (more on their
     differences soon). There are [[https://ocsigen.org/eliom/6.2/manual/clientserver-html#server_generating_html][other options]], but we will not discuss them.
 
-    Finally, we generate a src_ocaml{body} element containing an src_ocaml{h1} heading with the
+    Finally, we generate a =body= element containing an =h1= heading with the
     text "Welcome from Eliom's distillery!".
 
 **** Refactoring the handler
