@@ -60,7 +60,7 @@ module Game = struct
       | Hidden   of char
     [@@deriving show]
 
-    let hidden
+    let mk_hidden
       : char -> t
       = fun char -> Hidden char
 
@@ -77,15 +77,23 @@ module Game = struct
     let is_char
       : char -> t -> bool
       = fun c l -> to_char l = c
+
+    let is_revealed
+      : t -> bool = function
+      | Revealed _ -> true
+      | Hidden _   -> false
+
   end
 
   module Word = struct
+
     type t = Letter.t list
     [@@deriving show]
 
     let of_string
       : string -> t
-      = fun str -> str |> CCString.to_list |> CCList.map Letter.hidden
+      = fun str ->
+        str |> CCString.to_list |> CCList.map Letter.mk_hidden
 
     let reveal
       : char -> t -> t
@@ -94,6 +102,10 @@ module Game = struct
           if Letter.is_char c l then Letter.reveal l else l
         in List.map reveal_match word
 
+    let includes_char
+      : t -> char -> bool
+      = fun word char ->
+        CCList.exists (Letter.is_char char) word
   end
 
   type t =
@@ -104,58 +116,80 @@ module Game = struct
 
   let max_guesses = 6
 
-  let start
-    : string -> t
-    = fun str ->
-      { guesses   = 0
-      ; word      = Word.of_string str
-      ; incorrect = [] }
+  module Update = struct
+    let start
+      : string -> (t, t) result
+      = fun str ->
+        Ok { guesses   = 0
+           ; word      = Word.of_string str
+           ; incorrect = [] }
 
-  let guess
-    : t -> char -> t
-    = fun ({guesses; word; incorrect} as game) guess ->
-      let guesses, word, incorrect =
-        if CCList.exists (Letter.is_char guess) game.word
-        then guesses, (Word.reveal guess game.word), incorrect
-        else (guesses + 1), game.word, (guess :: incorrect)
-      in
-      {guesses; word; incorrect}
-
+    let guess
+      : char -> t -> (t, t) result
+      = fun guess ({guesses; word; incorrect} as game) ->
+        if Word.includes_char word guess then
+          Ok { guesses
+             ; word = (Word.reveal guess word)
+             ; incorrect }
+        else if List.mem guess incorrect then
+          Ok game
+        else if guesses < max_guesses then
+          Ok { guesses = (guesses + 1)
+             ; word
+             ; incorrect = (guess :: incorrect) }
+        else
+          Error game
+  end
 end
 
+module Render = struct
+  open Eliom_content.Html.F
+  module F = Eliom_content.Html.F
+
+  let gallows guesses =
+    let image = ["1";"2";"3";"4";"5";"6";"7";"8";"9";"10"] in (* XXX *)
+    let index =
+      if guesses < List.length image
+      then guesses
+      else (List.length image) - 1
+    in
+    div [ p [pcdata @@ List.nth image index] ]
+
+  let letter = function
+    | Game.Letter.Revealed c -> c
+    | Game.Letter.Hidden _   -> '_'
+
+  let mystery_word word =
+    div [p [pcdata @@ CCString.of_list @@ List.map letter word]]
+
+  let already_tried incorrect =
+    div [p [pcdata @@ CCString.of_list incorrect]]
+
+  let game =
+    function
+    | Error _ ->
+      div [p [pcdata "Game over!"]]
+    | Ok Game.{guesses; word; incorrect} ->
+      if List.for_all Game.Letter.is_revealed word then
+        div [p [pcdata "You win!"]]
+      else
+        div [ gallows guesses
+            ; mystery_word word
+            ; already_tried incorrect ]
+end
 ]
 
 [%%client
+
 open Eliom_content.Html
 
-let split s =
-  let len = String.length s in
-  let rec aux acc = function
-    | 0 -> acc
-    | n -> aux (s.[n - 1] :: acc) (pred n)
-  in aux [] len
-
-let value_signal, set_value = React.S.create "initial"
-
-let value_len = React.S.map String.length value_signal
+let value_signal, set_value = React.S.create @@ Game.Update.start "initial"
 
 let content_signal : Html_types.div_content_fun elt React.signal =
-  let char_to_paragraph c = F.p [F.pcdata (Printf.sprintf "%c" c)] in
-  let stack_chars str =
-    let chars = split str in
-    F.div (List.map char_to_paragraph chars)
-  in
-  React.S.map stack_chars value_signal
-
-let make_color len =
-  let d = (len * 10) mod 255 in
-  Printf.sprintf "color: rgb(%d,%d,%d)" d d d
+  React.S.map Render.game value_signal
 
 let make_client_nodes () =
-  let color = [R.a_style (React.S.map make_color value_len)] in
-  [ D.p [R.pcdata value_signal]
-  ; D.p ~a:color [R.pcdata value_signal]
-  ; R.node content_signal ]
+  [ R.node content_signal ]
 
 ]
 
@@ -168,9 +202,13 @@ let make_input () =
      async (fun () ->
        let inp = To_dom.of_input ~%inp in
        keyups inp (fun _ _ ->
-         let s = Js.to_string (inp##.value) in
-         set_value s;
-         Lwt.return ()))
+         match CCString.to_list (Js.to_string (inp##.value)) with (* XXX *)
+         | []      -> Lwt.return ()
+         | char::_ ->
+           let guess = Game.Update.guess char in
+           let game = React.S.value value_signal in
+           set_value @@ CCResult.flat_map guess game;
+           Lwt.return ()))
      : unit)
     ]
   in
