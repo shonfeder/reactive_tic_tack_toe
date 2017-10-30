@@ -521,14 +521,63 @@ let () =
    # OCamlfind packages for the client
    CLIENT_PACKAGES := lwt.ppx js_of_ocaml.ppx js_of_ocaml.deriving.ppx containers ppx_deriving.show
    #+END_SRC
-* Adding reactivity
-** Adding package dependencies
+** The data structure
+   Define a module
 
-   Add ~react~ to the list of required packages:
-
-   #+BEGIN_SRC makefile
-   # OCamlfind packages for the server
-   SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx react
-   # OCamlfind packages for the client
-   CLIENT_PACKAGES := lwt.ppx js_of_ocaml.ppx js_of_ocaml.deriving.ppx react
+   #+BEGIN_SRC ocaml
+   module Game = struct
+     ...
+     type t
+   end
    #+END_SRC
+
+   where src_ocaml{Game.t} is the principle type of the game, and ~...~
+   defines all the more basic parts of the game.
+
+** Updating the data
+
+   Define a function src_ocaml{update: Game.t -> 'input -> Game.t}, where
+   src_ocaml{'input} is whatever input is needed to determine how the game is
+   transformed between turns.
+
+** Rendering the data to HTML
+
+   Define a function src_ocaml{render: Game.t -> <Eliom_html_type_stuff>} that
+   takes the game in to rendering of the data into generated html.
+
+* Reactivity
+
+** Defining the signal, setter, and reactive nodes
+
+   Initialize a reactive signal and set function:
+
+   #+BEGIN_SRC ocaml
+   let signal, set = React.S.create @@ Game.Update.start "initial"
+   #+END_SRC
+
+   ~signal~ will be the signal through which new updates arrive. ~set~ is a
+   function whereby updates are sent through the signal.
+
+   Create a reactive rendering of the signal:
+
+   #+BEGIN_SRC ocaml
+   let content_signal : Html_types.div_content_fun elt React.signal =
+     React.S.map Render.game signal
+   #+END_SRC
+
+   we map the rendering function on to the signal, creating a signal with the
+   generated HTML. When the signal is updated, this will be updated too.
+
+   Create a function from the unit to a reactive node containing the rendering of
+   the signal:
+
+   #+BEGIN_SRC ocaml
+   let make_client_nodes () =
+     [ R.node content_signal ]
+   #+END_SRC
+
+   When we place this in our page, whenever we send new values of
+   src_ocaml{Game.t} to the ~signal~ with ~set~, the reactive node will update
+   with the fresh rendering of the data.
+
+** TODO Plumbing the input data and reactive nodes in to our page
